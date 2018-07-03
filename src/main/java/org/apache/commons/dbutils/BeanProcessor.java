@@ -464,9 +464,9 @@ public class BeanProcessor {
         Arrays.fill(columnToProperty, PROPERTY_NOT_FOUND);
 
         for (int col = 1; col <= cols; col++) {
-            String columnName = rsmd.getColumnLabel(col);
+            String columnName = getPropertyName(rsmd.getColumnLabel(col));
             if (null == columnName || 0 == columnName.length()) {
-              columnName = rsmd.getColumnName(col);
+              columnName = getPropertyName(rsmd.getColumnName(col));
             }
             String propertyName = columnToPropertyOverrides.get(columnName);
             if (propertyName == null) {
@@ -529,6 +529,24 @@ public class BeanProcessor {
 
         return retval;
 
+    }
+
+    private String getPropertyName(String columnName){
+        if(columnName == null) return null;
+        StringBuilder sb = new StringBuilder();
+        boolean match = false;
+        for (int i=0; i<columnName.length(); i++){
+            char ch = columnName.charAt(i);
+            if (match && ch>96 && ch<123)
+                ch -= 32;
+            if (ch!='_'){
+                match = false;
+                sb.append(ch);
+            }else{
+                match = true;
+            }
+        }
+        return sb.toString();
     }
 
 }
